@@ -1,0 +1,85 @@
+
+//campus.mcgill.ca/EMF/ELE/amasci1/Desktop/G45_Lab2/max.axf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00000000 <__cs3_interrupt_vector>:
+			.text
+			.global _start
+
+_start:			LDR R0, =NUMBERS 	//give location of array of numbers
+   0:	e59f0074 	ldr	r0, [pc, #116]	; 7c <NUMBERS+0x1c>
+				LDR R1, N			//number of elements in array
+   4:	e59f1050 	ldr	r1, [pc, #80]	; 5c <N>
+				PUSH {R0, R1, LR}	//pushing parameters of max function and LR
+   8:	e92d4003 	push	{r0, r1, lr}
+				BL MAX				//branch to max and store PC to LR register
+   c:	eb000002 	bl	1c <MAX>
+				POP {R0, R1, LR}	//taking outputs back from stack
+  10:	e8bd4003 	pop	{r0, r1, lr}
+				STR R0, RESULT		//moving max to result memory
+  14:	e58f003c 	str	r0, [pc, #60]	; 58 <RESULT>
+
+00000018 <END>:
+END:			B END				//infinite loop!
+  18:	eafffffe 	b	18 <END>
+
+0000001c <MAX>:
+
+
+				
+
+
+MAX: 			PUSH {R0-R4}		//saving the values of the registers
+  1c:	e92d001f 	push	{r0, r1, r2, r3, r4}
+				LDR R3, [SP, #20]	//access parameter in the stack of the memoy location pointerof first number array
+  20:	e59d3014 	ldr	r3, [sp, #20]
+				LDR R2, [SP, #24]	//getting number of elements in array
+  24:	e59d2018 	ldr	r2, [sp, #24]
+				LDR R0, [R3]		//getting first number in array
+  28:	e5930000 	ldr	r0, [r3]
+
+0000002c <LOOP>:
+
+LOOP:			SUBS R2, R2, #1		//decrement the loop counter
+  2c:	e2522001 	subs	r2, r2, #1
+				BEQ DONE			//end loop if counte has reached 0
+  30:	0a000005 	beq	4c <DONE>
+				ADD R3, R3, #4		//R3 points to the next nmber in the list
+  34:	e2833004 	add	r3, r3, #4
+				LDR R1, [R3]		//R1 holds he next number in the list 
+  38:	e5931000 	ldr	r1, [r3]
+				CMP R0, R1			//check if it is greater than the maximum
+  3c:	e1500001 	cmp	r0, r1
+				BGE LOOP			//if no, branch back to the loop
+  40:	aafffff9 	bge	2c <LOOP>
+				MOV R0, R1			//if yes, update the current max
+  44:	e1a00001 	mov	r0, r1
+				B LOOP				//branch back to the loop
+  48:	eafffff7 	b	2c <LOOP>
+
+0000004c <DONE>:
+
+DONE:			STR R0, [SP, #20]	//store max into Stack where R0 was
+  4c:	e58d0014 	str	r0, [sp, #20]
+				POP {R0-R4}			//restore variables used
+  50:	e8bd001f 	pop	{r0, r1, r2, r3, r4}
+				BX LR				//go back to caller and continue
+  54:	e12fff1e 	bx	lr
+
+00000058 <RESULT>:
+  58:	00000000 	.word	0x00000000
+
+0000005c <N>:
+  5c:	00000007 	.word	0x00000007
+
+00000060 <NUMBERS>:
+  60:	00000004 	.word	0x00000004
+  64:	00000005 	.word	0x00000005
+  68:	00000003 	.word	0x00000003
+  6c:	00000006 	.word	0x00000006
+  70:	00000001 	.word	0x00000001
+  74:	00000008 	.word	0x00000008
+  78:	00000002 	.word	0x00000002
+  7c:	00000060 	.word	0x00000060

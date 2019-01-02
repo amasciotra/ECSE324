@@ -1,0 +1,122 @@
+
+//campus.mcgill.ca/EMF/ELE/amasci1/Desktop/G45_Lab1/center.axf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00000000 <__cs3_interrupt_vector>:
+				.text
+				.global _start
+
+_start:
+				LDR R4, =RESULT		//R4 points to the result location
+   0:	e59f40b0 	ldr	r4, [pc, #176]	; b8 <NUMBERS+0x20>
+				LDR R2, [R4, #4]	//R2 holds the number of elements in the list
+   4:	e5942004 	ldr	r2, [r4, #4]
+				ADD R3, R4, #8		//R3 points to the first number
+   8:	e2843008 	add	r3, r4, #8
+				LDR R0, [R3]		//R0 holds the first number in the list
+   c:	e5930000 	ldr	r0, [r3]
+				ADD R3, R3, #4		//R3 2nd number in list is now pointed to
+  10:	e2833004 	add	r3, r3, #4
+				LDR R5, [R3]		//R5 holds the value of the second number in the list
+  14:	e5935000 	ldr	r5, [r3]
+				ADD R6, R5, R0		//R6 holds the sum of the first two numbers
+  18:	e0856000 	add	r6, r5, r0
+				SUB R2, R2, #1		// for looping, 0 to n-2 to center array so subtract 1 before in the loop
+  1c:	e2422001 	sub	r2, r2, #1
+
+00000020 <LOOP>:
+
+LOOP:			SUBS R2, R2, #1		//decrement the loop counter
+  20:	e2522001 	subs	r2, r2, #1
+				BEQ DONE			//end loop if counte has reached 0
+  24:	0a000003 	beq	38 <DONE>
+				ADD R3, R3, #4		//R3 points to the next nmber in the list
+  28:	e2833004 	add	r3, r3, #4
+				LDR R1, [R3]		//R1 holds he next number in the list 
+  2c:	e5931000 	ldr	r1, [r3]
+				ADD R6, R1, R6		//current value + total result
+  30:	e0816006 	add	r6, r1, r6
+				B LOOP				//branch back to the loop
+  34:	eafffff9 	b	20 <LOOP>
+
+00000038 <DONE>:
+
+DONE:			STR R6, [R4]		//store the result to the memory location
+  38:	e5846000 	str	r6, [r4]
+
+				LDR R2, [R4, #4]	//This holds elements in list
+  3c:	e5942004 	ldr	r2, [r4, #4]
+				MOV R9, #0			//shifting number
+  40:	e3a09000 	mov	r9, #0
+
+00000044 <LOOP2>:
+
+LOOP2:			ADD R9, R9, #1		//up counter
+  44:	e2899001 	add	r9, r9, #1
+				LSR R2, R2, #1		//shift elements right 
+  48:	e1a020a2 	lsr	r2, r2, #1
+				CMP R2, #1			//compare to 1 and see if value is equal
+  4c:	e3520001 	cmp	r2, #1
+				BEQ DONE2			// yes exit loop
+  50:	0a000000 	beq	58 <DONE2>
+				B LOOP2				//no, go through loop again
+  54:	eafffffa 	b	44 <LOOP2>
+
+00000058 <DONE2>:
+
+DONE2:			
+				LSR R6, R6, R9		//Divide result by N (which is the where the counter got through, N)
+  58:	e1a06936 	lsr	r6, r6, r9
+				STR R6, [R4]		//store result in memory 
+  5c:	e5846000 	str	r6, [r4]
+				ADD R3, R4, #8		//Points to first number
+  60:	e2843008 	add	r3, r4, #8
+				LDR R0, [R3]		//holds first number
+  64:	e5930000 	ldr	r0, [r3]
+				LDR R2, [R4, #4]	//Holds number of elements
+  68:	e5942004 	ldr	r2, [r4, #4]
+				ADD R2, R2, #1		//increment the size by 1 so it can travese array fully
+  6c:	e2822001 	add	r2, r2, #1
+
+00000070 <LOOP3>:
+
+LOOP3:			SUBS R2, R2, #1		//down counter
+  70:	e2522001 	subs	r2, r2, #1
+				BEQ DONE3			//if counter = 0 exit loop
+  74:	0a000004 	beq	8c <DONE3>
+				SUB R0, R0, R6		//subtract average from current value
+  78:	e0400006 	sub	r0, r0, r6
+				STR R0, [R3]		//put back in same location
+  7c:	e5830000 	str	r0, [r3]
+				ADD R3, R3, #4		//points next number in list
+  80:	e2833004 	add	r3, r3, #4
+				LDR R0, [R3]		//next number in list
+  84:	e5930000 	ldr	r0, [r3]
+				B	LOOP3			//go back through loop		
+  88:	eafffff8 	b	70 <LOOP3>
+
+0000008c <DONE3>:
+DONE3: 
+
+
+END:			B END				//infinite loop!
+  8c:	eafffffe 	b	8c <DONE3>
+
+00000090 <RESULT>:
+  90:	00000000 	.word	0x00000000
+
+00000094 <N>:
+  94:	00000008 	.word	0x00000008
+
+00000098 <NUMBERS>:
+  98:	00000004 	.word	0x00000004
+  9c:	00000005 	.word	0x00000005
+  a0:	00000003 	.word	0x00000003
+  a4:	00000006 	.word	0x00000006
+  a8:	00000001 	.word	0x00000001
+  ac:	00000008 	.word	0x00000008
+  b0:	00000002 	.word	0x00000002
+  b4:	00000005 	.word	0x00000005
+  b8:	00000090 	.word	0x00000090

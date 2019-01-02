@@ -1,0 +1,67 @@
+
+//campus.mcgill.ca/EMF/ELE/amasci1/Desktop/G45_Lab2/fib.axf:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00000000 <__cs3_interrupt_vector>:
+			.text
+			.global _start
+
+_start:		LDR R6, =FIBNUM			//point to location of fibonacci number
+   0:	e59f6048 	ldr	r6, [pc, #72]	; 50 <RESULT+0x4>
+			LDR R0, [R6]			//get fib number
+   4:	e5960000 	ldr	r0, [r6]
+			MOV R1, #0				//Hold answer to return
+   8:	e3a01000 	mov	r1, #0
+			BL FIB					//Go to FIB to get result
+   c:	eb000001 	bl	18 <FIB>
+			STR R1, RESULT			//store result in right place	
+  10:	e58f1034 	str	r1, [pc, #52]	; 4c <RESULT>
+
+00000014 <END>:
+END: B END		
+  14:	eafffffe 	b	14 <END>
+
+00000018 <FIB>:
+			
+
+
+
+FIB:		PUSH {R0, LR}				//storing registers that might be used used in FIB in SR
+  18:	e92d4001 	push	{r0, lr}
+			CMP R0, #2					//check if R0 is greater than 2
+  1c:	e3500002 	cmp	r0, #2
+			BLT ELSE					//if FIB = 0 or 1 go to else to return 1 as result
+  20:	ba000005 	blt	3c <ELSE>
+			SUB R0, R0, #1				//subtract 1 to call fib next line
+  24:	e2400001 	sub	r0, r0, #1
+			BL FIB						//go back to top of fib
+  28:	ebfffffa 	bl	18 <FIB>
+			SUB R0, R0, #1				//subtract again 1 to call fib again
+  2c:	e2400001 	sub	r0, r0, #1
+			BL FIB						//call fib again
+  30:	ebfffff8 	bl	18 <FIB>
+			POP {R0, LR}				//erasing registers used
+  34:	e8bd4001 	pop	{r0, lr}
+			BX LR						//go back to top
+  38:	e12fff1e 	bx	lr
+
+0000003c <ELSE>:
+			
+			
+			
+
+ELSE:		ADD R1, R1, #1				//add 1 to result
+  3c:	e2811001 	add	r1, r1, #1
+			POP {R0, LR}				//done with registers so empty off the stack
+  40:	e8bd4001 	pop	{r0, lr}
+			BX LR						//go back to start where we left off  
+  44:	e12fff1e 	bx	lr
+
+00000048 <FIBNUM>:
+  48:	00000008 	.word	0x00000008
+
+0000004c <RESULT>:
+  4c:	00000000 	.word	0x00000000
+  50:	00000048 	.word	0x00000048
